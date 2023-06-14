@@ -15,14 +15,13 @@ provider "equinix" {
 }
 
 module "kubernetes_addons" {
-  # TODO: This assumes the addons are checked out locally in a specific place.  Don't.
-  source = "../../../terraform-equinix-kubernetes-addons"
+  source  = "equinix-labs/kubernetes-addons/equinix"
+  version = "0.3.0"
 
   ssh_user        = "root"
   ssh_private_key = var.ssh_private_key_path == "" ? join("\n", [chomp(module.tfk8s.ssh_key_pair[0].private_key_openssh), ""]) : chomp(file(var.ssh_private_key_path))
   ssh_host        = module.tfk8s.kubeapi-vip
 
-  # Wait to run add-ons until the cluster is ready for them
   kubeconfig_remote_path = "/etc/kubernetes/admin.conf"
 
   # TODO: These aren't used for CPEM add-on but we have to provide them
